@@ -1,0 +1,115 @@
+* {
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #232435;
+    background-image: linear-gradient(45deg, #232435, #35415f);
+    background-attachment: fixed;
+    color: #fff;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .container {
+    text-align: center;
+    padding-top: 100px;
+    backdrop-filter: blur(8px);
+    background-color: rgba(0, 0, 0, 0.4);
+    margin: 50px auto;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    padding: 40px 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .search-box {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  input[type="text"] {
+    padding: 10px 15px;
+    width: 65%;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+  }
+  
+  button {
+    padding: 10px 20px;
+    background: #ff9800;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  button:hover {
+    background: #e68900;
+  }
+  
+  #weather-result {
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+  
+  .weather-animation {
+    display: none;
+    margin-top: 30px;
+  }
+  
+  .weather {
+    position: relative;
+    width: 5rem;
+    height: 5rem;
+    margin: 0 auto;
+  }
+  
+  .sunny {
+    background-color: #f1c40f;
+    border-radius: 50%;
+    box-shadow: 0 0 25px #917508;
+  }
+  
+  .cloudy {
+    background-color: #ecf0f1;
+    border-radius: 50%;
+    box-shadow: 0 0 25px rgba(0, 0, 0, .3);
+  }
+  
+  .rainy {
+    background-color: #95a5a6;
+    border-radius: 50%;
+    box-shadow: 0 0 25px rgba(0, 0, 0, .3);
+  }
+  
+  .thundery {
+    background-color: #4d5656;
+    border-radius: 50%;
+    box-shadow: 0 0 25px rgba(0, 0, 0, .3);
+  }
+  
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  
+  @keyframes scaleDown {
+    0% { transform: scale(1); }
+    100% { transform: scale(.8); }
+  }
+  
