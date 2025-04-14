@@ -1,0 +1,157 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(45deg, #ff6b6b, #f7b7a3, #4ecdc4, #556270);
+    background-size: 400% 400%;
+    animation: gradientAnimation 10s ease infinite; /* Background animation */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.container {
+    background-color: rgba(255, 255, 255, 0.8); /* Slight transparency */
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    width: 350px;
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+    backdrop-filter: blur(10px); /* Optional background blur for modern look */
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.input-group {
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+}
+
+input[type="number"], input[type="checkbox"] {
+    margin-left: 10px;
+    transform: scale(1.1);
+}
+
+button {
+    background: linear-gradient(45deg, #6e7dff, #4e73df);
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    outline: none;
+}
+
+button:hover {
+    transform: translateY(-5px) scale(1.1);
+    background: linear-gradient(45deg, #4e73df, #6e7dff);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+button:active {
+    transform: scale(0.98);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+#generate {
+    background: linear-gradient(45deg, #ff6b6b, #ffb3b3);
+    transition: transform 0.2s ease;
+}
+
+#generate:hover {
+    background: linear-gradient(45deg, #ffb3b3, #ff6b6b);
+    transform: scale(1.05);
+}
+
+#result {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #444;
+}
+
+#password {
+    font-weight: bold;
+    color: #333;
+    word-wrap: break-word;
+    font-size: 22px;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+}
+
+#copy {
+    background: #008CBA;
+    color: white;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 20px;
+    border: none;
+    transition: background-color 0.3s ease;
+    font-size: 16px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+#copy:hover {
+    background-color: #007B9E;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Loader Animation */
+.loader {
+    display: none;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #4CAF50;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+/* Password Animation */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
