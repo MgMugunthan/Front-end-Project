@@ -4,36 +4,393 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Password Generator</title>
-    <link rel="stylesheet" href="design.css">  <!-- Updated CSS file name -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --jungle-green-dark: #14532d;
+            --jungle-brown: #78350f;
+            --stone-bg: #44403c;
+            --stone-text: #fde68a;
+            --text-color: #f0fdf4;
+            --vine-color: #84cc16;
+            --cave-dark: #292524;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-image: url('bg.webp');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- Scene Layout --- */
+        .jungle-scene {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            height: 600px;
+        }
+        
+        /* --- Cave & Character Positions --- */
+        .character-cave, .character-container {
+            position: absolute;
+            bottom: 2rem;
+        }
+
+        .character-cave {
+            left: 2rem;
+            width: 180px;
+            height: 200px;
+            background: var(--cave-dark);
+            border-radius: 50% 50% 20px 20px / 120px 120px 20px 20px;
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.8);
+        }
+        .character-cave::before {
+            content: "Don't go inside";
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-10deg);
+            background: #a16207;
+            color: #fefce8;
+            font-family: 'Bangers', cursive;
+            padding: 5px 15px;
+            border-radius: 5px;
+            border: 3px solid #422006;
+            white-space: nowrap;
+            font-size: 1.2rem;
+        }
+        
+        .character-flurry-container {
+            position: absolute;
+            bottom: 0;
+            left: 90px;
+            width: 1px;
+            height: 1px;
+            z-index: 11;
+        }
+        
+        .flying-char {
+            position: absolute;
+            font-family: 'Bangers', cursive;
+            color: var(--stone-text);
+            font-size: 1.5rem;
+            opacity: 0;
+            animation: fly-out 1s ease-out forwards;
+        }
+
+        @keyframes fly-out {
+            0% { transform: translate(0, 0) scale(0.5); opacity: 1; }
+            100% { transform: translate(var(--x, 0), var(--y, 0)) scale(1); opacity: 0; }
+        }
+
+        /* --- Central UI Box --- */
+        .container {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            text-align: center;
+        }
+
+        /* --- Character & Animations --- */
+        .character-container {
+            right: 100px;
+            z-index: 10;
+        }
+
+        .jungle-character {
+            width: 150px;
+            height: auto;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+            transform-origin: center bottom;
+        }
+        
+        .jungle-character.sleeping { animation: sleep 4s infinite ease-in-out; }
+        @keyframes sleep { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-5deg); } }
+        
+        .jungle-character.waking-up { animation: wakeUp 0.5s ease-in-out forwards; }
+        @keyframes wakeUp { from { transform: rotate(-5deg); } to { transform: rotate(0deg); } }
+        
+        .character-container.running-to-cave { animation: runToCave 2s linear forwards; }
+        @keyframes runToCave { from { transform: translateX(0); } to { transform: translateX(-550px); } }
+
+        .character-container.running #left-leg, .character-container.running #right-leg,
+        .character-container.running #left-arm, .character-container.running #right-arm {
+            animation: run-motion 0.4s infinite linear;
+        }
+        @keyframes run-motion {
+            0%, 100% { transform: rotate(20deg); }
+            50% { transform: rotate(-20deg); }
+        }
+        
+        .jungle-character.grabbing #right-arm { animation: grab-motion 1s ease-in-out; }
+        @keyframes grab-motion { 50% { transform: translateX(-20px) translateY(10px) rotate(-60deg); } }
+
+        .character-container.climbing { animation: climbVine 2s ease-in-out forwards; }
+        @keyframes climbVine {
+            from { transform: translateX(-550px) translateY(0); }
+            to { transform: translateX(-550px) translateY(-250px); }
+        }
+        
+        .character-container.descending { animation: descendVine 2s ease-in-out forwards; }
+        @keyframes descendVine { 
+            from { transform: translateX(-550px) translateY(-250px); } 
+            to { transform: translateX(-550px) translateY(0); }
+        }
+        
+        .character-container.placing-chars #left-arm { animation: place-chars-motion 0.3s infinite ease-in-out; }
+        @keyframes place-chars-motion { 50% { transform: rotate(30deg) translateX(10px); } }
+
+        .vine-svg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 9; pointer-events: none; opacity: 0;
+        }
+        .vine-svg.visible { opacity: 1; }
+        #vine-path {
+            stroke: var(--jungle-brown); stroke-width: 8; stroke-linecap: round;
+            fill: none; stroke-dasharray: 320; stroke-dashoffset: 320;
+            filter: url(#wavy);
+        }
+        #vine-path.throwing { animation: throw-vine-draw 1s ease-out forwards; }
+        @keyframes throw-vine-draw { to { stroke-dashoffset: 0; } }
+
+        /* --- UI Styling --- */
+        .generator-box { background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); border-radius: 30px; padding: 2rem; width: 100%; max-width: 500px; border: 2px solid rgba(255, 255, 255, 0.2); }
+        .generator-box h1 { font-family: 'Bangers', cursive; font-size: 2.5rem; color: var(--stone-text); margin-bottom: 1rem; text-shadow: 2px 2px 5px rgba(0,0,0,0.5); }
+        .password-stone { background-color: var(--stone-bg); border-radius: 15px; padding: 1rem 1.5rem; font-family: 'Bangers', cursive; font-size: 1.5rem; letter-spacing: 2px; color: var(--stone-text); min-height: 80px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; border: 4px solid #292524; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); word-break: break-all; }
+        #copy-btn { background: transparent; border: none; color: var(--stone-text); cursor: pointer; opacity: 0.8; transition: opacity 0.2s, transform 0.2s; padding-left: 10px; }
+        #copy-btn:disabled { cursor: not-allowed; opacity: 0.4; }
+        .controls { display: grid; gap: 1rem; margin-bottom: 1.5rem; }
+        .control { display: flex; justify-content: space-between; align-items: center; }
+        input[type="range"] { width: 150px; }
+        #generate-btn { width: 100%; padding: 0.8rem; font-family: 'Bangers', cursive; font-size: 1.5rem; letter-spacing: 2px; color: var(--jungle-green-dark); background: var(--vine-color); border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 5px 0 #4d7c0f; transition: all 0.1s ease-in-out; }
+        #generate-btn:disabled { background: #a1a1aa; cursor: not-allowed; box-shadow: 0 5px 0 #71717a; }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Password Generator</h1>
-        <div class="input-group">
-            <label for="length">Password Length:</label>
-            <input type="number" id="length" value="12" min="4" max="20">
+    <div class="jungle-scene">
+        <div class="character-cave">
+            <div class="character-flurry-container"></div>
         </div>
-        <div class="input-group">
-            <label for="uppercase">Include Uppercase:</label>
-            <input type="checkbox" id="uppercase" checked>
+
+        <div class="container">
+            <div class="generator-box">
+                <h1>Jungle Locksmith</h1>
+                <div class="password-stone">
+                    <span id="password-display">...</span>
+                    <button id="copy-btn" title="Copy Password">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="controls">
+                     <div class="control"> <label for="length">Password Length</label> <input type="range" id="length" min="8" max="24" value="14"> <span id="length-value">14</span> </div>
+                    <div class="control"> <label for="uppercase">Include Uppercase</label> <input type="checkbox" id="uppercase" checked> </div>
+                    <div class="control"> <label for="numbers">Include Numbers</label> <input type="checkbox" id="numbers" checked> </div>
+                    <div class="control"> <label for="special">Include Special</label> <input type="checkbox" id="special" checked> </div>
+                </div>
+                <button id="generate-btn">Wake Leo!</button>
+            </div>
         </div>
-        <div class="input-group">
-            <label for="numbers">Include Numbers:</label>
-            <input type="checkbox" id="numbers" checked>
-        </div>
-        <div class="input-group">
-            <label for="special">Include Special Characters:</label>
-            <input type="checkbox" id="special" checked>
-        </div>
-        <button id="generate" onclick="generatePassword()">Generate Password</button>
-        <div id="loader" class="loader"></div> <!-- Loader Animation -->
-        <div id="result">
-            <h3>Generated Password:</h3>
-            <p id="password"></p>
-            <button id="copy" onclick="copyPassword()">Copy</button> <!-- Copy Button -->
+        
+        <svg class="vine-svg">
+            <filter id="wavy">
+                <feTurbulence x="0" y="0" baseFrequency="0.02 0.1" numOctaves="5" seed="2"/>
+                <feDisplacementMap in="SourceGraphic" scale="5"/>
+            </filter>
+            <path id="vine-path" d="M 350 450 V 130"/>
+        </svg>
+        
+        <div class="character-container">
+            <svg id="leo" class="jungle-character sleeping" viewBox="0 0 150 200" xmlns="http://www.w3.org/2000/svg">
+              <g id="jungle-man">
+                <g id="legs">
+                    <g id="left-leg" transform-origin="68px 135px"> <path d="M68,135 C60,160 65,195 70,195 C72,195 72,170 72,150 L68,135 Z" fill="#D4A16A"/> </g>
+                    <g id="right-leg" transform-origin="82px 135px"> <path d="M82,135 C90,160 85,195 80,195 C78,195 78,170 78,150 L82,135 Z" fill="#E0AC69"/> </g>
+                </g>
+                <g id="torso-group">
+                    <path d="M60,140 C55,110 55,70 75,40 C95,70 95,110 90,140 Z" fill="#E0AC69"/>
+                    <path d="M50,140 L100,140 L110,170 L40,170 Z" fill="#FFA500"/>
+                    <path d="M55,142 L60,168 M75,142 L75,170 M95,142 L90,168" stroke="#000" stroke-width="3"/>
+                </g>
+                 <g id="arms">
+                    <g id="left-arm" transform-origin="60px 80px"> <path d="M55,80 C30,90 25,110 55,130 L60,125 C35,110 40,90 58,80 Z" fill="#E0AC69"/> </g>
+                    <g id="right-arm" transform-origin="90px 80px"> <path d="M95,80 C120,90 125,110 95,130 L90,125 C115,110 110,90 92,80 Z" fill="#E0AC69"/> </g>
+                </g>
+                <g id="head-group">
+                    <ellipse cx="75" cy="40" rx="35" ry="35" fill="#E0AC69"/>
+                    <path d="M40,10 C-10,20 -10,80 40,80 C50,90 100,90 110,80 C160,80 160,20 110,10 C95,-5 55,-5 40,10 Z" fill="#5C3A21"/>
+                    <path id="eyes-closed" d="M60,45 Q67.5,50 75,45 M90,45 Q82.5,50 75,45" stroke="#000" stroke-width="2" fill="none"/>
+                    <g id="eyes-open" style="display:none;">
+                      <circle cx="65" cy="45" r="4" fill="#fff"/><circle cx="65" cy="45" r="2" fill="#000"/>
+                      <circle cx="85" cy="45" r="4" fill="#fff"/><circle cx="85" cy="45" r="2" fill="#000"/>
+                    </g>
+                    <path d="M70,55 Q75,60 80,55" stroke="#000" stroke-width="2" fill="none"/>
+                </g>
+              </g>
+            </svg>
         </div>
     </div>
-    <script src="back.js"></script>  <!-- Updated JavaScript file name -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const generateBtn = document.getElementById('generate-btn');
+            const leoCharacter = document.getElementById('leo');
+            const characterContainer = document.querySelector('.character-container');
+            const eyesClosed = document.getElementById('eyes-closed');
+            const eyesOpen = document.getElementById('eyes-open');
+            const vineSvg = document.querySelector('.vine-svg');
+            const vinePath = document.getElementById('vine-path');
+            const passwordDisplay = document.getElementById('password-display');
+            const flurryContainer = document.querySelector('.character-flurry-container');
+            
+            const lengthSlider = document.getElementById('length');
+            const lengthValue = document.getElementById('length-value');
+            const copyBtn = document.getElementById('copy-btn');
+            const uppercaseEl = document.getElementById('uppercase');
+            const numbersEl = document.getElementById('numbers');
+            const specialEl = document.getElementById('special');
+
+            let isAtCave = false;
+
+            lengthSlider.addEventListener('input', (e) => lengthValue.textContent = e.target.value);
+            generateBtn.addEventListener('click', handleGenerateClick);
+            copyBtn.addEventListener('click', copyPassword);
+            
+            function handleGenerateClick() {
+                generateBtn.disabled = true;
+                generateBtn.textContent = "Leo is waking up...";
+
+                if (isAtCave) {
+                    characterContainer.style.transition = 'transform 1s ease-in-out';
+                    characterContainer.style.transform = 'translateX(0)';
+                    setTimeout(startMainAnimation, 1000);
+                } else {
+                    startMainAnimation();
+                }
+            }
+
+            function startMainAnimation() {
+                characterContainer.style.transition = ''; 
+                isAtCave = false;
+                leoCharacter.classList.remove('sleeping');
+                leoCharacter.classList.add('waking-up');
+                leoCharacter.style.transform = 'scaleX(-1)';
+                eyesClosed.style.display = 'none';
+                eyesOpen.style.display = 'block';
+
+                setTimeout(() => {
+                    generateBtn.textContent = "He's on the move...";
+                    leoCharacter.classList.remove('waking-up');
+                    characterContainer.classList.add('running', 'running-to-cave');
+                }, 500);
+
+                setTimeout(() => {
+                    generateBtn.textContent = "Grabbing characters...";
+                    characterContainer.classList.remove('running');
+                    leoCharacter.classList.add('grabbing');
+                    triggerCharacterFlurry();
+                }, 2500);
+
+                setTimeout(() => {
+                    generateBtn.textContent = "Preparing the vine...";
+                    leoCharacter.classList.remove('grabbing');
+                    vineSvg.classList.add('visible');
+                    vinePath.classList.add('throwing');
+                }, 3500);
+
+                setTimeout(() => {
+                    generateBtn.textContent = "Here he comes!";
+                    characterContainer.classList.add('climbing');
+                }, 4500);
+
+                setTimeout(() => {
+                    characterContainer.classList.add('placing-chars');
+                    const password = createPassword();
+                    typePassword(password, () => {
+                        characterContainer.classList.remove('placing-chars');
+                    });
+                }, 6500);
+                
+                setTimeout(() => {
+                    generateBtn.textContent = "Returning to the cave...";
+                    characterContainer.classList.remove('climbing');
+                    characterContainer.classList.add('descending');
+                }, 9000);
+                
+                setTimeout(() => {
+                    generateBtn.textContent = "Resting...";
+                    characterContainer.classList.remove('descending');
+                    characterContainer.classList.remove('running-to-cave');
+                    isAtCave = true;
+                    leoCharacter.style.transform = 'scaleX(1)';
+                    eyesClosed.style.display = 'block';
+                    eyesOpen.style.display = 'none';
+                    leoCharacter.classList.add('sleeping');
+                    resetForNextRun();
+                }, 11000);
+            }
+            
+            function resetForNextRun() {
+                generateBtn.disabled = false;
+                generateBtn.textContent = "Wake Leo!";
+                vineSvg.classList.remove('visible');
+                vinePath.classList.remove('throwing');
+                passwordDisplay.textContent = "...";
+            }
+            
+            function triggerCharacterFlurry() {
+                flurryContainer.innerHTML = '';
+                const chars = 'ABCDEFGHIJKLMN012345!@#$%';
+                for (let i = 0; i < 20; i++) {
+                    const charSpan = document.createElement('span');
+                    charSpan.className = 'flying-char';
+                    charSpan.textContent = chars[Math.floor(Math.random() * chars.length)];
+                    const x = (Math.random()) * 150 + 20;
+                    const y = -(Math.random() * 150);
+                    charSpan.style.setProperty('--x', `${x}px`);
+                    charSpan.style.setProperty('--y', `${y}px`);
+                    flurryContainer.appendChild(charSpan);
+                }
+            }
+            
+            function typePassword(password, callback) {
+                let index = 0;
+                passwordDisplay.textContent = ''; 
+                copyBtn.disabled = true; 
+                const intervalId = setInterval(() => {
+                    if (index < password.length) {
+                        passwordDisplay.textContent += password.charAt(index);
+                        index++;
+                    } else {
+                        clearInterval(intervalId);
+                        copyBtn.disabled = false;
+                        if(callback) callback();
+                    }
+                }, 80);
+            }
+
+            function createPassword() { const e=+lengthSlider.value,t=uppercaseEl.checked,n=numbersEl.checked,s=specialEl.checked,a="abcdefghijklmnopqrstuvwxyz",r="ABCDEFGHIJKLMNOPQRSTUVWXYZ",o="0123456789",c="!@#$%^&*()-=_+"; let l=a;t&&(l+=r),n&&(l+=o),s&&(l+=c);let d="";for(let i=0;i<e;i++)d+=l[Math.floor(Math.random()*l.length)];return d}
+            function copyPassword() { const e=passwordDisplay.textContent;if(!e||e.includes("..."))return;const t=copyBtn.innerHTML,n='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="#a3e635" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>';navigator.clipboard.writeText(e).then(()=>{copyBtn.innerHTML=n,setTimeout(()=>copyBtn.innerHTML=t,2e3)})}
+        });
+    </script>
 </body>
 </html>
-``
+
