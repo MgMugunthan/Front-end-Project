@@ -1,34 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Weather App with Animation</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Weather Dashboard</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Weather Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.10/css/weather-icons.min.css">
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <div class="container">
-    <h1>🌤️ Weather Forecast</h1>
-    <div class="search-box">
-      <input type="text" id="city" placeholder="Enter city name..." />
-      <button onclick="getWeather()">Get Weather</button>
+<body class="default-bg">
+    
+    <div id="animation-container"></div>
+
+    <div id="app-container">
+        <div class="search-container">
+            <input type="text" id="city-input" placeholder="Enter a city name...">
+            <button id="search-btn">Search</button>
+        </div>
+
+        <div id="message-container" class="message-container">
+            Enter a city to see the magic happen!
+        </div>
+
+        <div id="weather-dashboard">
+            <div class="current-weather">
+                <div class="location-details">
+                    <h2 id="current-city">City Name</h2>
+                    <p id="current-condition">Weather Condition</p>
+                </div>
+                <div class="weather-icon-large">
+                    <i id="current-weather-icon" class="wi"></i>
+                </div>
+                <div class="temp-details">
+                    <div id="current-temp" class="main-temp">--°</div>
+                    <div class="feels-like">Feels like <span id="feels-like">--</span>°</div>
+                </div>
+                <div class="additional-info">
+                    <div class="info-item">
+                        <i class="wi wi-humidity"></i>
+                        <p>Humidity</p>
+                        <p id="humidity">--%</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="wi wi-strong-wind"></i>
+                        <p>Wind</p>
+                        <p id="wind-speed">-- km/h</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="forecast-container">
+                <h3>3-Day Forecast</h3>
+                <div id="forecast-cards" class="forecast-cards">
+                    <!-- Forecast cards will be injected here -->
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="weather-result"></div>
-
-    <!-- Weather Animation -->
-    <div class="weather-animation">
-      <div id="sunny" class="weather sunny"></div>
-      <div id="cloudy" class="weather cloudy"></div>
-      <div id="rainy" class="weather rainy">
-        <div class="rain"></div>
-      </div>
-      <div id="thundery" class="weather thundery">
-        <div class="thunder"></div>
-      </div>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="script.js"></script>
 </body>
 </html>
+
